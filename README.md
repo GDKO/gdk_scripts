@@ -1,4 +1,4 @@
-stats
+gdk_scripts
 =====
 
-R script to calculate statistics
+A collection of useful bioinformatic scripts
