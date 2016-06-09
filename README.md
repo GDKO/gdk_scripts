@@ -1,4 +1,4 @@
 gdk_scripts
 =====
 
-A collection of useful bioinformatic scripts
+A collection of useful scripts for bioinformatics
