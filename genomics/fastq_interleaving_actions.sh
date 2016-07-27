@@ -1,12 +1,15 @@
 #!/bin/bash
 # Usage: fastq_interleaving_actions.sh [i|d] f.fastq r.fastq
+#
+# Scripts from Nathan Haig https://gist.github.com/nathanhaigh/
+# concatenated into one file
 
 if [[ $1 == "i" ]]; then
   INTERLEAVE=1
 elif [[ $1 == "d" ]]; then
   INTERLEAVE=0
 else
-  echo "Usage: fastq_interleaving_actions.sh [i|d] f.fastq r.fastq i.fastq"
+  echo "Usage: fastq_interleaving_actions.sh [i|d] f.fastq r.fastq"
   echo "Please specify i for interleaving or d for deinterleaving"
   exit
 fi
