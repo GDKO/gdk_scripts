@@ -9,8 +9,9 @@ if [[ $1 == "i" ]]; then
 elif [[ $1 == "d" ]]; then
   INTERLEAVE=0
 else
-  echo "Usage: fastq_interleaving_actions.sh [i|d] f.fastq r.fastq"
-  echo "Please specify i for interleaving or d for deinterleaving"
+  echo "Usage:"
+  echo " [INTERLEAVING]  fastq_interleaving_actions.sh i f.fastq r.fastq > [i.fastq]"
+  echo "[DEINTERLEAVING] cat [i.fastq] | fastq_interleaving_actions.sh d f.fastq r.fastq"
   exit
 fi
 
