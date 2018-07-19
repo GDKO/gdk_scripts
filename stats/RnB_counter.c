@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    char line[100000];
+    char line[9000000];
     int k=0;
     double b=0;
     double i=0;
