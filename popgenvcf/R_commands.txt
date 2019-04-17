@@ -20,3 +20,47 @@ dfr1 <- dfr1 %>% mutate(start=as.integer(str_extract(str_replace_all(distc,"[\\(
 dfr2 <- q %>% group_by(distc) %>% summarise(per = length(V4[V4==4])/ length(V4) )
 dfr2 <- dfr2 %>% mutate(start=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"^[0-9-e+.]+")),end=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"[0-9-e+.]+$")),mid=start+((end-start)/2))
 ggplot()+geom_point(data=dfr1,aes(x=start,y=mean),size=0.4,colour="grey20")+geom_line(data=dfr1,aes(x=start,y=mean),size=0.3,alpha=0.5,colour="red")+geom_point(data=dfr2,aes(x=start,y=per),size=0.4,colour="grey20")+geom_line(data=dfr2,aes(x=start,y=per),size=0.3,alpha=0.5,colour="blue")+labs(x="Distance between SNPs (Kilobases)", y=expression(LD~(r^{2})))+scale_x_continuous(breaks=c(0,5*10^4,10*10^4,15*10^4,20*10^4),labels=c("0","50","100","150","200"),limits=c(0,100000))+theme_bw()
+
+# PCA
+
+library("SNPRelate")
+library(ggplot2)
+vcf.fn<-"All_runs_ref.Q20.DP10.vcf"
+snpgdsVCF2GDS(vcf.fn, "ccm.gds",  method="copy.num.of.ref")
+genofile <- openfn.gds("ccm.gds")
+ccm_pca<-snpgdsPCA(genofile,autosome.only=FALSE)
+qplot(ccm_pca$eigenvect[,1],ccm_pca$eigenvect[,2],label = ccm_pca$sample.id)+geom_text(size = 2, hjust=-0.1, vjust=0.5)
+
+## variance proportion (%)
+pc.percent <- ccm_pca$varprop*100
+head(round(pc.percent, 2))
+
+# IBD
+library(vcfR)
+library(adegenet)
+library(adegraphics)
+library(pegas)
+library(StAMPP)
+library(lattice)
+library(gplots)
+library(ape)
+library(ggmap)
+library(MASS)
+library(tseries)
+
+vcf = read.vcfR("freebayes.DP10_perSample.Q20.noHet.noR3-4.ordered.vcf")
+
+aa.genlight <- vcfR2genlight(vcf, n.cores=1)
+pop(aa.genlight)=indNames(aa.genlight)
+aa.D.ind = stamppNeisD(aa.genlight, pop = FALSE)
+colnames(aa.D.ind) = rownames(aa.D.ind)
+aa.D.ind.dist = as.dist(aa.D.ind, diag = T)
+attr(aa.D.ind.dist, "Labels")<-rownames(aa.D.ind)
+
+x=as.matrix(read.table("pop_coords_meters.txt",header=T))
+Dgeo = as.dist(x,diag=T)
+IBD <- mantel.randtest(Dgeo,aa.D.ind.dist)
+myPal <- colorRampPalette(c("white","blue","gold", "orange", "red"))
+dens <- kde2d(Dgeo,aa.D.ind.dist, n=300)
+plot(Dgeo, aa.D.ind.dist, pch=20,cex=.5,xlab="Geographical Distance (meters)",ylab="Nei's Genetic Distance")
+image(dens, col=transp(myPal(300),.7), add=TRUE)
