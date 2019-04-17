@@ -1,0 +1,22 @@
+## R commands for population analyses
+
+
+
+# PiN/PiS from SNPgenie results
+library(dplyr)
+x=read.table("all_scafs_pops_summary.txt",header=T)
+x$Sd_sites=x$piS * x$S_sites
+x$Nd_sites=x$piN * x$N_sites
+x %>%  group_by(file) %>% summarise(piN = sum(Nd_sites)/sum(N_sites), piS = sum(Sd_sites)/sum(S_sites) ,piNS = (sum(Nd_sites)/sum(N_sites))/(sum(Sd_sites)/sum(S_sites)))
+
+# 4gamete / LD plots
+library(ggplot2)
+library(stringr)
+library(dplyr)
+q=read.table(file="4g_ld.stats",header=F)
+q$distc <- cut(q$V3,breaks=seq(from=min(q$V3)-1,to=max(q$V3)+1,by=1000))
+dfr1 <- q %>% group_by(distc) %>% summarise(mean=mean(V5),median=median(V5))
+dfr1 <- dfr1 %>% mutate(start=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"^[0-9-e+.]+")),end=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"[0-9-e+.]+$")),mid=start+((end-start)/2))
+dfr2 <- q %>% group_by(distc) %>% summarise(per = length(V4[V4==4])/ length(V4) )
+dfr2 <- dfr2 %>% mutate(start=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"^[0-9-e+.]+")),end=as.integer(str_extract(str_replace_all(distc,"[\\(\\)\\[\\]]",""),"[0-9-e+.]+$")),mid=start+((end-start)/2))
+ggplot()+geom_point(data=dfr1,aes(x=start,y=mean),size=0.4,colour="grey20")+geom_line(data=dfr1,aes(x=start,y=mean),size=0.3,alpha=0.5,colour="red")+geom_point(data=dfr2,aes(x=start,y=per),size=0.4,colour="grey20")+geom_line(data=dfr2,aes(x=start,y=per),size=0.3,alpha=0.5,colour="blue")+labs(x="Distance between SNPs (Kilobases)", y=expression(LD~(r^{2})))+scale_x_continuous(breaks=c(0,5*10^4,10*10^4,15*10^4,20*10^4),labels=c("0","50","100","150","200"),limits=c(0,100000))+theme_bw()
