@@ -7,6 +7,7 @@ Calculates statistics for numbers from STDIN
 cat [numbers list] | stats.R
 ```
 
+
 ### RnB_counter
 Calculates number of reads and bases in a fastq file (works also on gz files)
 ```
