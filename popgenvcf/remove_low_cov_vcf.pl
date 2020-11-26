@@ -6,7 +6,7 @@ use List::Util qw( min max );
 use Data::Dumper;
 
 my $filename = $ARGV[0];
-my $min_cov = 10;
+my $min_cov = $ARGV[1];
 open IN,"$filename";
 my @headers;
 
