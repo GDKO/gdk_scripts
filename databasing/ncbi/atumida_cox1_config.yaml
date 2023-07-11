@@ -1,0 +1,5 @@
+---
+search_term: "txid116153[Organism:noexp] AND (COX1 OR COI OR CO1)"
+database_file: A_tumida_COX1.fasta
+accs_exclude_file: accs_to_exclude.txt
+retmax: 1000 #should be more than sequences present
